@@ -26,6 +26,9 @@
 #include "r_vbo.h"
 #include "../hw_shaders.h"
 
+// requires GL 4.3
+//#define GLDEBUGMESSAGE
+
 #if defined (HWRENDER) && !defined (NOROPENGL)
 
 struct GLRGBAFloat
@@ -294,6 +297,10 @@ FUNCPRINTF static void GL_MSG_Error(const char *format, ...)
 #define pglCopyTexImage2D glCopyTexImage2D
 #define pglCopyTexSubImage2D glCopyTexSubImage2D
 
+#ifdef GLDEBUGMESSAGE
+#define pglDebugMessageCallback glDebugMessageCallback
+#endif
+
 #else //!STATIC_OPENGL
 
 /* 1.0 functions */
@@ -400,8 +407,6 @@ typedef void (APIENTRY * PFNglTexImage2D) (GLenum target, GLint level, GLint int
 static PFNglTexImage2D pglTexImage2D;
 typedef void (APIENTRY * PFNglTexSubImage2D) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
 static PFNglTexSubImage2D pglTexSubImage2D;
-typedef void (APIENTRY * PFNglGetTexImage) (GLenum target, GLint level, GLenum format, GLenum type, GLvoid *pixels);
-static PFNglGetTexImage pglGetTexImage;
 
 /* 1.1 functions */
 /* texture objects */ //GL_EXT_texture_object
@@ -445,6 +450,11 @@ static PFNglDeleteBuffers pglDeleteBuffers;
 /* 2.0 functions */
 typedef void (APIENTRY * PFNglBlendEquation) (GLenum mode);
 static PFNglBlendEquation pglBlendEquation;
+
+#ifdef GLDEBUGMESSAGE
+typedef void (APIENTRY * PFNglDebugMessageCallback) (void (APIENTRY *DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam), const void *userParam);
+static PFNglDebugMessageCallback pglDebugMessageCallback;
+#endif
 
 
 /* 1.2 Parms */
@@ -544,7 +554,6 @@ boolean SetupGLfunc(void)
 	GETOPENGLFUNC(pglTexImage1D, glTexImage1D)
 	GETOPENGLFUNC(pglTexImage2D, glTexImage2D)
 	GETOPENGLFUNC(pglTexSubImage2D, glTexSubImage2D)
-	GETOPENGLFUNC(pglGetTexImage, glGetTexImage)
 
 	GETOPENGLFUNC(pglGenTextures, glGenTextures)
 	GETOPENGLFUNC(pglDeleteTextures, glDeleteTextures)
@@ -707,6 +716,10 @@ void SetupGLFunc4(void)
 	pglUniform2fv = GetGLFunc("glUniform2fv");
 	pglUniform3fv = GetGLFunc("glUniform3fv");
 	pglGetUniformLocation = GetGLFunc("glGetUniformLocation");
+#endif
+
+#ifdef GLDEBUGMESSAGE
+	*(void**)&pglDebugMessageCallback = GetGLFunc("glDebugMessageCallback");
 #endif
 }
 
@@ -989,6 +1002,50 @@ void SetModelView(GLint w, GLint h)
 	pglGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
 }
 
+#ifdef GLDEBUGMESSAGE
+static void APIENTRY DebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+{
+	const char *debugsource, *debugtype;
+
+	switch (source)
+	{
+#define S(s) case GL_DEBUG_SOURCE_##s: debugsource = #s; break
+		S(API);
+		S(WINDOW_SYSTEM);
+		S(SHADER_COMPILER);
+		S(THIRD_PARTY);
+		S(APPLICATION);
+		S(OTHER);
+#undef S
+	default:
+		debugsource = "unknown";
+		break;
+	}
+
+	switch (type)
+	{
+#define S(s) case GL_DEBUG_TYPE_##s: debugtype = #s; break
+		S(ERROR);
+		S(DEPRECATED_BEHAVIOR);
+		S(UNDEFINED_BEHAVIOR);
+		S(PORTABILITY);
+		S(PERFORMANCE);
+		S(MARKER);
+		S(PUSH_GROUP);
+		S(POP_GROUP);
+		S(OTHER);
+#undef S
+	default:
+		debugtype = "unknown";
+		break;
+	}
+
+	alerttype_t level = severity == GL_DEBUG_SEVERITY_HIGH ? CONS_ERROR
+	                  : severity == GL_DEBUG_SEVERITY_MEDIUM ? CONS_WARNING
+	                  : CONS_NOTICE;
+	CONS_Alert(level, "OpenGL (%s) (%s): %s\n", debugsource, debugtype, message);
+}
+#endif
 
 // -----------------+
 // SetStates        : Set permanent states
@@ -1049,6 +1106,12 @@ void SetStates(void)
 	pglLoadIdentity();
 	pglScalef(1.0f, 1.0f, -1.0f);
 	pglGetFloatv(GL_MODELVIEW_MATRIX, modelMatrix); // added for new coronas' code (without depth buffer)
+
+#ifdef GLDEBUGMESSAGE
+	pglEnable(GL_DEBUG_OUTPUT);
+	pglEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	pglDebugMessageCallback(&DebugMessage, NULL);
+#endif
 }
 
 
@@ -1172,36 +1235,55 @@ EXPORT void HWRAPI(ClearMipMapCache) (void)
 // Writes screen texture tex into dst_data.
 // Pixel format is 24-bit RGB. Row order is top to bottom.
 // Dimensions are screen_width * screen_height.
-EXPORT void HWRAPI(ReadScreenTexture) (int tex, UINT8 *dst_data)
+EXPORT void HWRAPI(ReadScreenTexture) (int tex, UINT8 *dest, INT32 scale)
 {
-	INT32 i;
-	int dst_stride = screen_width * 3; // stride between rows of image data
-	GLubyte*top = (GLvoid*)dst_data, *bottom = top + dst_stride * (screen_height - 1);
-	GLubyte *row;
-	row = malloc(dst_stride);
-	if (!row) return;
-	// at the time this function is called, generic2 can be found drawn on the framebuffer
-	// if some other screen texture is needed, draw it to the framebuffer
-	// and draw generic2 back after reading the framebuffer.
-	// this hack is for some reason **much** faster than the simple solution of using glGetTexImage.
+	const INT32 stride = (screen_width/scale)*3;
+	INT32 scanlines = screen_height;
+	GLubyte *image; // romoney5: msvc doesn't support "restrict?"
+
 	if (tex != HWD_SCREENTEXTURE_GENERIC2)
 		DrawScreenTexture(tex, NULL, 0);
+	image = malloc(screen_width*screen_height*3);
 	pglPixelStorei(GL_PACK_ALIGNMENT, 1);
-	pglReadPixels(0, 0, screen_width, screen_height, GL_RGB, GL_UNSIGNED_BYTE, dst_data);
+	pglReadPixels(0, 0, screen_width, screen_height, GL_RGB, GL_UNSIGNED_BYTE, image);
 	if (tex != HWD_SCREENTEXTURE_GENERIC2)
 		DrawScreenTexture(HWD_SCREENTEXTURE_GENERIC2, NULL, 0);
-	// Flip image upside down.
-	// In other words, convert OpenGL's "bottom->top" row order into "top->bottom".
-	for(i = 0; i < screen_height/2; i++)
+
+	// TODO the downscaling happens in the screen capture code now,
+	// yet we're still doing this on the CPU? sheesh...
+	// this is where actual knowledge of OpenGL would've come in handy
+	image += scanlines*screen_width*3;
+	while ((scanlines -= scale) >= 0)
 	{
-		memcpy(row, top, dst_stride);
-		memcpy(top, bottom, dst_stride);
-		memcpy(bottom, row, dst_stride);
-		top += dst_stride;
-		bottom -= dst_stride;
+		image -= screen_width*scale*3;
+		if (scale == 1)
+			memcpy(dest, image, stride);
+		else for (INT32 i = 0; i < stride; i += 3)
+			memcpy(dest + i, image + i*scale, 3);
+		dest += stride;
 	}
-	free(row);
+
+	// ...yet still, restrict doesn't make the inner loop any faster
+	free(image - ((screen_height % scale) * screen_width*3));
 }
+
+
+/*
+// -----------------+
+// SetPalette       : Changes the current texture palette
+// -----------------+
+EXPORT void HWRAPI(SetPalette) (RGBA_t *palette)
+{
+	INT32 i;
+
+	for (i = 0; i < 256; i++)
+	{
+		myPaletteData[i].s = palette[i].s;
+	}
+
+	Flush();
+}
+*/
 
 
 // -----------------+

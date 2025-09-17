@@ -199,7 +199,10 @@ void SCR_SetMode(void)
 	}
 
 	if (vid.change.set)
+	{
+		M_StopMovie();
 		VID_SetSize(vid.change.width, vid.change.height);
+	}
 
 	V_SetPalette(0);
 

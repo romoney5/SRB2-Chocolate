@@ -70,7 +70,7 @@
 	\return	void
 */
 //
-void *hwSym(const char *funcName,void *handle)
+void *hwSym(const char *funcName, void *handle)
 {
 	void *funcPointer = NULL;
 #ifdef HWRENDER

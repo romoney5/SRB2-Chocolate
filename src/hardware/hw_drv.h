@@ -40,7 +40,8 @@ EXPORT void HWRAPI(ClearBuffer) (FBOOLEAN ColorMask, FBOOLEAN DepthMask, FRGBAFl
 EXPORT void HWRAPI(SetTexture) (GLMipmap_t *TexInfo);
 EXPORT void HWRAPI(UpdateTexture) (GLMipmap_t *TexInfo);
 EXPORT void HWRAPI(DeleteTexture) (GLMipmap_t *TexInfo);
-EXPORT void HWRAPI(ReadScreenTexture) (int tex, UINT8 *dst_data);
+EXPORT void HWRAPI(ReadScreenTexture) (int tex, UINT8 *dest, INT32 scale);
+// EXPORT void HWRAPI(SetPalette) (int tex, UINT8 *dst_data, INT32 scale);
 EXPORT void HWRAPI(GClipRect) (INT32 minx, INT32 miny, INT32 maxx, INT32 maxy, float nearclip);
 EXPORT void HWRAPI(ClearMipMapCache) (void);
 

@@ -115,7 +115,7 @@ void I_WaitVBL(INT32 count);
 
 	\return	void
 */
-void I_ReadScreen(UINT8 *scr);
+void I_ReadScreen(UINT8 *scr, INT32 scale); // romoney5: msvc doesn't support "restrict?"
 
 /**	\brief Start disk icon
 */

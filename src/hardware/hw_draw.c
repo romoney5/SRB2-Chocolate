@@ -1392,40 +1392,16 @@ static inline boolean saveTGA(const char *file_name, void *buffer,
 // screen shot
 // --------------------------------------------------------------------------
 
-UINT8 *HWR_GetScreenshot(void)
+UINT8 *HWR_GetScreenshot(INT32 scale)
 {
-	UINT8 *buf = malloc(vid.width * vid.height * 3 * sizeof (*buf));
+	UINT8 *buf = malloc((vid.width / scale) * (vid.height / scale) * 3 * sizeof (*buf));
 	int tex = HWR_ShouldUsePaletteRendering() ? HWD_SCREENTEXTURE_GENERIC3 : HWD_SCREENTEXTURE_GENERIC2;
 
 	if (!buf)
 		return NULL;
 	// returns 24bit 888 RGB
-	HWD.pfnReadScreenTexture(tex, (void *)buf);
+	HWD.pfnReadScreenTexture(tex, (void *)buf, scale);
 	return buf;
-}
-
-boolean HWR_Screenshot(const char *pathname)
-{
-	boolean ret;
-	UINT8 *buf = malloc(vid.width * vid.height * 3 * sizeof (*buf));
-	int tex = HWR_ShouldUsePaletteRendering() ? HWD_SCREENTEXTURE_GENERIC3 : HWD_SCREENTEXTURE_GENERIC2;
-
-	if (!buf)
-	{
-		CONS_Debug(DBG_RENDER, "HWR_Screenshot: Failed to allocate memory\n");
-		return false;
-	}
-
-	// returns 24bit 888 RGB
-	HWD.pfnReadScreenTexture(tex, (void *)buf);
-
-#ifdef USE_PNG
-	ret = M_SavePNG(pathname, buf, vid.width, vid.height, NULL);
-#else
-	ret = saveTGA(pathname, buf, vid.width, vid.height);
-#endif
-	free(buf);
-	return ret;
 }
 
 #endif //HWRENDER

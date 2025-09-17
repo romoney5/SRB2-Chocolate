@@ -448,7 +448,7 @@ void F_WipeStartScreen(void)
 	}
 #endif
 	wipe_scr_start = screens[3];
-	I_ReadScreen(wipe_scr_start);
+	I_ReadScreen(wipe_scr_start, 1);
 #endif
 }
 
@@ -468,7 +468,7 @@ void F_WipeEndScreen(void)
 	}
 #endif
 	wipe_scr_end = screens[4];
-	I_ReadScreen(wipe_scr_end);
+	I_ReadScreen(wipe_scr_end, 1);
 	V_DrawBlock(0, 0, 0, vid.width, vid.height, wipe_scr_start);
 #endif
 }
