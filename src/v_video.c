@@ -2783,9 +2783,6 @@ void V_Init(void)
 			screens[i] = base + i*screensize;
 	}
 
-	if (vid.direct)
-		screens[0] = vid.direct;
-
 #ifdef DEBUG
 	CONS_Debug(DBG_RENDER, "V_Init done:\n");
 	for (i = 0; i < NUMSCREENS; i++)
@@ -2812,8 +2809,4 @@ void V_Recalc(void)
 
 	vid.meddup = (UINT8)(vid.dup >> 1) + 1;
 	vid.smalldup = (UINT8)(vid.dup / 3) + 1;
-#ifdef HWRENDER
-	vid.fmeddup = vid.meddup*FRACUNIT;
-	vid.fsmalldup = vid.smalldup*FRACUNIT;
-#endif
 }
