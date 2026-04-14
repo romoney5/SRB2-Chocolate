@@ -1905,6 +1905,13 @@ void I_StartupGraphics(void)
 		SDLdoGrabMouse();
 
 	graphics_started = true;
+
+	SDL_GL_SwapWindow(window);
+
+#ifdef __APPLE__
+	// Must pump events once after creating window before window will actually appear.
+	SDL_PumpEvents();
+#endif
 }
 
 void VID_StartupOpenGL(void)

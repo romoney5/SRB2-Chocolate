@@ -1437,6 +1437,9 @@ void D_SRB2Main(void)
 	// Do this up here so that WADs loaded through the command line can use ExecCfg
 	COM_Init();
 
+	CONS_Printf("I_StartupGraphics()...\n");
+	I_StartupGraphics();
+
 	COM_AddCommand("assert", Command_assert, COM_LUA);
 
 	// Add any files specified on the command line with
@@ -1512,9 +1515,6 @@ void D_SRB2Main(void)
 
 	//---------------------------------------------------- READY SCREEN
 	// we need to check for dedicated before initialization of some subsystems
-
-	CONS_Printf("I_StartupGraphics()...\n");
-	I_StartupGraphics();
 
 #ifdef HWRENDER
 	// Lactozilla: Add every hardware mode CVAR and CCMD.
