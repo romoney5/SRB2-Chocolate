@@ -163,6 +163,8 @@ typedef enum
 } wipestyleflags_t;
 extern wipestyleflags_t wipestyleflags;
 
+boolean F_CanSkipWipe(void);
+
 // Even my function names are borderline
 boolean F_ShouldColormapFade(void);
 boolean F_TryColormapFade(UINT8 wipecolor);
