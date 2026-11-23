@@ -1,13 +1,11 @@
-# Sonic Robo Blast 2 Banpyura
+<p align = "center">
+<img width="132" height="132" alt="srb2chocolate" src="https://github.com/user-attachments/assets/94fc79e3-f048-4238-acee-37b427dc3f90" />
+</p>
+<h1 align = "center">Sonic Robo Blast 2 Chocolate</h1>
 
-<img width="215" height="215" alt="srb2" src="https://github.com/user-attachments/assets/2ef6dbae-e755-4e60-b20b-9d4cda4466ae" />
+SRB2 Chocolate is an experimental custom build, forked from [SRB2 Banpyura](https://www.github.com/GLideKS/SRB2-Banpyura), that aims to provide a more feature-complete experience, similar to that of [SRB2-edit](https://www.github.com/luigi-budd/SRB2-edit).
 
-SRB2 Banpyura is a custom netgame compatible build of Sonic Robo Blast 2. It has a plethora of fixes, improvements, and new features fully based on contributions and other changes the community made, but still holding modding accuracy with SRB2 Vanilla.
-
-> [!CAUTION]
-> I (GLide KS) do not assume any responsibility for add-ons loaded locally (feature introduced in SRB2 Kart Saturn, ported to SRB2-Banpyura). If you choose to load or use add-ons for malicious or harmful purposes, you're completely on your own responsibility.
-
-Icon credits goes to ClovesCloestarSRB2 and his addon [New Springs](https://mb.srb2.org/addons/new-springs.8942/) from the base spring.
+Icon made by romoney5.
 
 ## Features
 
@@ -81,7 +79,7 @@ Icon credits goes to ClovesCloestarSRB2 and his addon [New Springs](https://mb.s
 
 - Github Actions build (go to the Actions tab on the top, then select the one that corresponds to your platform; x64 Windows builds require different DLLs) (this requires being signed in to GitHub!)
 - Compile from the source code.
-- [Download the latest build from nightly.link (Windows x86)](https://nightly.link/GLideKS/SRB2-Banpyura/workflows/windows-x86-makefile/vanilla-master?preview)
+- [Download the latest build from nightly.link (Windows x86)](https://nightly.link/romoney5/SRB2-Chocolate/workflows/windows-x86-makefile/chocolate-main?preview)
 
 # Screenshots / GIFs
 
