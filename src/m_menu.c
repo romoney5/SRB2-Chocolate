@@ -6980,11 +6980,11 @@ static void M_HandleAddons(INT32 choice)
 				break;
 
 			if (!addons_localmode) {
-				S_StartSound(NULL, sfx_ding);
+				S_StartSoundFromEverywhere(sfx_ding);
 				addons_localmode = true;
 			}
 			else {
-				S_StartSound(NULL, sfx_jshard);
+				S_StartSoundFromEverywhere(sfx_jshard);
 				addons_localmode = false;
 			}
 
