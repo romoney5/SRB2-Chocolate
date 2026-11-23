@@ -1736,7 +1736,7 @@ boolean CURLPrepareFile(const char* url, int dfilenum)
 		if (cc != CURLE_OK) I_OutputMsg("libcurl: %s\n", curl_errbuf);
 
 		// Set user agent, as some servers won't accept invalid user agents.
-		cc = curl_easy_setopt(http_handle, CURLOPT_USERAGENT, va("Sonic Robo Blast 2 Banpyura/%s", VERSIONSTRING));
+		cc = curl_easy_setopt(http_handle, CURLOPT_USERAGENT, va("Sonic Robo Blast 2 Chocolate/%s", VERSIONSTRING));
 		if (cc != CURLE_OK) I_OutputMsg("libcurl: %s\n", curl_errbuf);
 
 		// Authenticate if the user so wishes

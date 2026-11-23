@@ -969,9 +969,9 @@ static void COM_Help_f(void)
 						CONS_Printf("\tOrigin: Vanilla""\x82"" (Check wiki.srb2.org for more information)\n");
 					} else if (cmd->flags & COM_CLIENT && !(cmd->flags & COM_LUACOM))
 					{
-						CONS_Printf("\tOrigin: Client""\x82"" (Check Banpyura's \"README.md\" file for more information)\n");
+						CONS_Printf("\tOrigin: Client""\x82"" (Check the \"README.md\" file for more information)\n");
 					} else {
-						CONS_Printf("\tOrigin: Addon""\x82"" (Refer to the addon page for more information)\n");
+						CONS_Printf("\tOrigin: Addon""\x82"" (Refer to the addon for more information)\n");
 					}
 				}
 				return;
@@ -2641,7 +2641,7 @@ static void CV_Info(consvar_t *v)
 			CONS_Printf("\tOrigin: Addon""\x82"" (Refer to the addon for more information)\n");
 		} else if (v->flags & CV_CLIENT && !(v->flags & CV_LUAVAR))
 		{
-			CONS_Printf("\tOrigin: Client""\x82"" (Check Banpyura's README for more information)\n");
+			CONS_Printf("\tOrigin: Client""\x82"" (Check the \"README.md\" file for more information)\n");
 		}
 	}
 			
@@ -2765,13 +2765,26 @@ void CV_ClearChangedFlags(void)
   *
   * \param f File to save to.
   */
-void CV_SaveVariables(FILE *f)
+void CV_SaveVariables(FILE *f, boolean forbanpyura)
 {
 	consvar_t *cvar;
 
 	for (cvar = consvar_vars; cvar; cvar = cvar->next)
 		if (cvar->flags & CV_SAVE)
 		{
+			if (forbanpyura)
+			{
+				// Only save CV_CLIENT cvars
+				if ((cvar->flags & CV_CLIENT) == 0)
+					continue;
+			}
+			else
+			{
+				// Don't save CV_CLIENT cvars
+				if (cvar->flags & CV_CLIENT)
+					continue;
+			}
+			
 			char stringtowrite[MAXTEXTCMD+1];
 
 			const char * string;

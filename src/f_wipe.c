@@ -105,6 +105,11 @@ static UINT8 *wipe_scr_end; //screen 4
 static UINT8 *wipe_scr; //screen 0 (main drawing)
 static fixed_t paldiv = 0;
 
+boolean F_CanSkipWipe(void)
+{
+	return !(marathonmode || dedicated);
+}
+
 /** Create fademask_t from lump
   *
   * \param	lump	Lump name to get data from
@@ -119,7 +124,7 @@ static fademask_t *F_GetFadeMask(UINT8 masknum, UINT8 scrnnum)
 	size_t lsize;
 	RGBA_t *pcolor;
 
-	if (masknum > 99 || scrnnum > 99 || (!cv_wipes.value && !marathonmode && !dedicated))
+	if (masknum > 99 || scrnnum > 99 || (!cv_wipes.value && F_CanSkipWipe()))
 		goto freemask;
 
 	sprintf(&lumpname[4], "%.2hu%.2hu", (UINT16)masknum, (UINT16)scrnnum);

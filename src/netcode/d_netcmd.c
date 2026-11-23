@@ -415,6 +415,8 @@ consvar_t cv_showaddoninfo = CVAR_INIT ("showaddoninfo", "On", CV_SAVE|CV_CLIENT
 static CV_PossibleValue_t cvarinfo_const_t[] = {{0, "Show All"}, {1, "Hide Origin"}, {2, "Hide Flags"}, {3, "Only Show Values"}, {0, NULL}};
 consvar_t cv_cvarinformation = CVAR_INIT ("cvarinfo", "Show All", CV_SAVE|CV_CLIENT, cvarinfo_const_t, NULL);
 
+static consvar_t cv_allowadminaddfile = CVAR_INIT ("allowfilerequests", "Yes", CV_SAVE|CV_CLIENT, CV_OnOff, NULL);
+
 char timedemo_name[256];
 boolean timedemo_csv;
 char timedemo_csv_id[256];
@@ -451,9 +453,11 @@ const char *netxcmdnames[MAXNETXCMD - 1] =
 	"REQADDFOLDER",
 	"SETMOTD",
 	"SUICIDE",
+	"DEMOTED",
 	"LUACMD",
 	"LUAVAR",
-	"LUAFILE"
+	"LUAFILE",
+	"MUTEPLAYER"
 };
 
 // =========================================================================
@@ -553,6 +557,9 @@ void D_RegisterServerCommands(void)
 
 	// for master server connection
 	AddMServCommands();
+
+	// I guess this goes here? - niko
+	CV_RegisterVar(&cv_allowadminaddfile);
 
 	CV_RegisterVar(&cv_glallowshaders);
 
@@ -2302,8 +2309,8 @@ static void Got_Pause(UINT8 **cp, INT32 playernum)
 	{
 		if (netgame)
 		{
-			if (dedicatedpause)
-				playername = "SERVER";
+			if (dedicatedpause && playernum == serverplayer) 
+				playername = "~SERVER";
 			else
 				playername = player_names[playernum];
 
@@ -2433,7 +2440,10 @@ static void Got_Clearscores(UINT8 **cp, INT32 playernum)
 	for (i = 0; i < MAXPLAYERS; i++)
 		players[i].score = players[i].recordscore = 0;
 
-	CONS_Printf(M_GetText("Scores have been reset by the server.\n"));
+	if (playernum == serverplayer)
+		CONS_Printf(M_GetText("Scores have been reset by the server.\n"));
+	else
+		CONS_Printf(M_GetText("Scores have been reset by %s.\n"), player_names[playernum]);
 }
 
 // Team changing functions
@@ -3843,8 +3853,13 @@ static void Got_RequestAddfilecmd(UINT8 **cp, INT32 playernum)
 	READSTRINGN(*cp, filename, 240);
 	READMEM(*cp, md5sum, 16);
 
+	CONS_Alert(CONS_NOTICE, M_GetText("Addfile command request received from %s, file %s\n"), player_names[playernum], filename);
+
 	// Only the server processes this message.
 	if (client)
+		return;
+
+	if (server && !cv_allowadminaddfile.value)
 		return;
 
 	// Disallow non-printing characters and semicolons.
@@ -3899,10 +3914,15 @@ static void Got_RequestAddfoldercmd(UINT8 **cp, INT32 playernum)
 
 	READSTRINGN(*cp, path, 240);
 
+	CONS_Alert(CONS_NOTICE, "Addfolder command request received from %s, path %s\n", player_names[playernum], path);
+
 	/// \todo Integrity checks.
 
 	// Only the server processes this message.
 	if (client)
+		return;
+
+	if (server && !cv_allowadminaddfile.value)
 		return;
 
 	// Disallow non-printing characters and semicolons.
@@ -4072,9 +4092,9 @@ static void Command_ListWADS_f(void)
 static void Command_Version_f(void)
 {
 #ifdef DEVELOP
-	CONS_Printf("Sonic Robo Blast 2 Banpyura %s %s %s (%s %s) ", compbranch, comprevision, compnote, compdate, comptime);
+	CONS_Printf("Sonic Robo Blast 2 Chocolate %s %s %s (%s %s) ", compbranch, comprevision, compnote, compdate, comptime);
 #else
-	CONS_Printf("Sonic Robo Blast 2 Banpyura %s (%s %s %s %s) ", VERSIONSTRING, compdate, comptime, comprevision, compbranch);
+	CONS_Printf("Sonic Robo Blast 2 Chocolate %s (%s %s %s %s) ", VERSIONSTRING, compdate, comptime, comprevision, compbranch);
 #endif
 
 	// Base library

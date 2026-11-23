@@ -78,6 +78,19 @@ static const char *GetChatColorFromVideoFlag(INT32 flag)
 	}
 }
 
+
+// Server View Music, just like SRB2-Edit does, but I took out the unnecessary stuff
+static const char* servmus_1 = "SRVMS1";
+static const char* servmus_2 = "SRVMS2";
+
+static void ChangeServMusic(const char* musname)
+{
+	if (!(cv_servermusic.value))
+		return;
+	
+	S_ChangeMusicInternal(S_MusicExists(musname, true, true) ? musname : "_chsel", true);
+}
+
 static boolean IsDownloadingFile(void)
 {
 	if (cl_mode == CL_DOWNLOADFILES || cl_mode == CL_DOWNLOADHTTPFILES)
@@ -226,7 +239,12 @@ static void CL_DrawServerInfo(void)
 		xoffset = 80;
 	}
 
-	V_DrawString(12 + xoffset, ypos+2, V_ALLOWLOWERCASE, va("%s", serverlist[joinnode].info.servername));
+	const char *servername = va("%s", serverlist[joinnode].info.servername);
+
+	if (strlen(servername) <= 23)
+		V_DrawString(12 + xoffset, ypos+2, V_ALLOWLOWERCASE, servername);
+	else
+		V_DrawThinString(12 + xoffset, ypos+2, V_ALLOWLOWERCASE, servername);
 
 	UINT32 ping = (UINT32)serverlist[joinnode].info.time;
 	const char *pingcolor = "\x85";
@@ -437,7 +455,7 @@ static void CL_DrawDownloadAddonList(void)
 	INT32 y = ypos + 68;
 	INT32 height = 10;
 	INT32 totalsize = 0;
-	fileneeded_t filelist[fileneedednum];
+	fileneeded_t filelist[MAXFILENEEDED];
 	INT32 filelistsize = 0;
 	for (int j = 0; j < fileneedednum; j++)
 	{
@@ -1107,6 +1125,7 @@ static void DoLoadFiles(void)
 	Snake_Free(&snake);
 
 	cl_mode = CL_LOADFILES;
+	ChangeServMusic(servmus_2);
 }
 
 static void AbortConnection(void)
@@ -1180,23 +1199,6 @@ static void BeginDownload(boolean direct)
 	}
 }
 
-/*static void M_ConfirmConnect(event_t *ev)
-{
-	if (ev->type == ev_keydown)
-	{
-		if (ev->key == ' ' || ev->key == 'y' || ev->key == KEY_ENTER || ev->key == KEY_JOY1)
-		{
-			BeginDownload(UseDirectDownloader());
-			M_ClearMenus(true);
-		}
-		else if (ev->key == 'n' || ev->key == KEY_ESCAPE || ev->key == KEY_JOY1 + 3)
-		{
-			cl_mode = CL_ABORTED;
-			M_ClearMenus(true);
-		}
-	}
-}*/
-
 static const char *GetPrintableFileSize(UINT64 filesize)
 {
 	static char downloadsize[32];
@@ -1228,26 +1230,6 @@ static void ShowDownloadConsentMessage(void)
 			totalsize += fileneeded[i].totalsize;
 	}
 	filedownload.totalsize = totalsize;
-
-	/*
-	const char *downloadsize = GetPrintableFileSize(totalsize);
-
-	if (serverisfull)
-		M_StartMessage(va(M_GetText(
-			"This server is full!\n"
-			"Download of %s of additional\ncontent is required to join.\n"
-			"\n"
-			"You may download server addons,\nand wait for a slot.\n"
-			"\n"
-			"Press ENTER to continue\nor ESC to cancel.\n"
-		), downloadsize), M_ConfirmConnect, MM_EVENTHANDLER);
-	else
-		M_StartMessage(va(M_GetText(
-			"Download of %s of additional\ncontent is required to join.\n"
-			"\n"
-			"Press ENTER to continue\nor ESC to cancel.\n"
-		), downloadsize), M_ConfirmConnect, MM_EVENTHANDLER);
-	*/
 
 	cl_mode = CL_CONFIRMCONNECT;
 	curfadevalue = 0;
@@ -1344,18 +1326,11 @@ static boolean CL_FinishedFileList(void)
 	{
 		if (serverisfull)
 		{
-			/*M_StartMessage(M_GetText(
-				"This server is full!\n"
-				"\n"
-				"You may load server addons (if any), and wait for a slot.\n"
-				"\n"
-				"Press ENTER to continue\nor ESC to cancel.\n\n"
-			), M_ConfirmConnect, MM_EVENTHANDLER);*/
 			cl_mode = CL_CONFIRMCONNECT;
 			curfadevalue = 0;
 		}
 		else
-			cl_mode = CL_LOADFILES;
+			DoLoadFiles();
 	}
 	else
 	{
@@ -1615,6 +1590,7 @@ static boolean CL_ServerConnectionTicker(const char *tmpsave, tic_t *oldtic, tic
 				viewserver_toggle = false;
 				viewserver_scroll = 0;
 				cl_mode = CL_VIEWSERVER;
+				ChangeServMusic(servmus_1);
 				CL_CheckAddonTypes();
 			}
 			else if (fileneedednum != cl_lastcheckedfilecount || I_GetTime() >= *asksent)
@@ -1714,7 +1690,7 @@ static boolean CL_ServerConnectionTicker(const char *tmpsave, tic_t *oldtic, tic
 				break;
 
 		case CL_CONNECTED:
-		case CL_CONFIRMCONNECT: //logic is handled by M_ConfirmConnect
+		case CL_CONFIRMCONNECT: //logic is handled by CL_CONFIRMCONNECT
 		default:
 			break;
 
@@ -1754,26 +1730,27 @@ static boolean CL_ServerConnectionTicker(const char *tmpsave, tic_t *oldtic, tic
 				if (fileneeded[i].status == FS_NOTFOUND || fileneeded[i].status == FS_MD5SUMBAD)
 					totalfiles++;
 
-			if (gamekeydown[KEY_ENTER])
+			if (gamekeydown[KEY_ENTER] || gamekeydown[KEY_JOY1])
 			{
 				if (totalfiles > 0)
 				{
 					BeginDownload(UseDirectDownloader());
+					gamekeydown[KEY_ENTER] = false;
 				}
 				else
 				{
-					cl_mode = CL_LOADFILES;
+					DoLoadFiles();
 				}
 				S_StartSoundFromEverywhere(sfx_menu1);
 			}
-			else if (gamekeydown[KEY_ESCAPE])
+			else if (gamekeydown[KEY_ESCAPE] || gamekeydown[KEY_JOY1+1])
 			{
 				cl_mode = CL_ABORTED;
 			}
 			
 			if (totalfiles > ADDONSCROLLLIMIT)
 			{
-				if (gamekeydown[KEY_DOWNARROW])
+				if (gamekeydown[KEY_DOWNARROW] || JoyAxis(JA_MOVE) > 0 || gamekeydown[KEY_HAT1+1])
 				{
 					if (viewfiles != (totalfiles - ADDONSCROLLLIMIT))
 					{
@@ -1785,7 +1762,7 @@ static boolean CL_ServerConnectionTicker(const char *tmpsave, tic_t *oldtic, tic
 						viewfiles = totalfiles - ADDONSCROLLLIMIT;
 				}
 
-				if (gamekeydown[KEY_UPARROW])
+				if (gamekeydown[KEY_UPARROW] || JoyAxis(JA_MOVE) < 0 || gamekeydown[KEY_HAT1])
 				{
 					if (viewfiles)
 					{
@@ -1802,16 +1779,16 @@ static boolean CL_ServerConnectionTicker(const char *tmpsave, tic_t *oldtic, tic
 		// key handler for server info
 		if (cl_mode == CL_VIEWSERVER)
 		{
-			if (gamekeydown[KEY_ENTER])
+			if (gamekeydown[KEY_ENTER] || gamekeydown[KEY_JOY1])
 			{
 				cl_mode = CL_CHECKFILES;
 				S_StartSoundFromEverywhere(sfx_menu1);
 			}
 
-			if (gamekeydown[KEY_ESCAPE])
+			if (gamekeydown[KEY_ESCAPE] || gamekeydown[KEY_JOY1+1])
 				cl_mode = CL_ABORTED;
 
-			if (gamekeydown[KEY_SPACE])
+			if (gamekeydown[KEY_SPACE] || gamekeydown[KEY_JOY1+2])
 			{
 				if (fileneedednum > 0)
 				{
@@ -1830,7 +1807,7 @@ static boolean CL_ServerConnectionTicker(const char *tmpsave, tic_t *oldtic, tic
 
 			if (viewserver_addons && (fileneedednum > MAXLISTADDONS))
 			{
-				if (gamekeydown[KEY_DOWNARROW])
+				if (gamekeydown[KEY_DOWNARROW] || JoyAxis(JA_MOVE) > 0 || gamekeydown[KEY_HAT1+1])
 				{
 					if (viewserver_scroll != (fileneedednum - ADDONSCROLLLIMIT))
 					{
@@ -1841,7 +1818,7 @@ static boolean CL_ServerConnectionTicker(const char *tmpsave, tic_t *oldtic, tic
 					if (viewserver_scroll > (fileneedednum - ADDONSCROLLLIMIT))
 						viewserver_scroll = (fileneedednum - ADDONSCROLLLIMIT);
 				}
-				else if (gamekeydown[KEY_UPARROW])
+				else if (gamekeydown[KEY_UPARROW] || JoyAxis(JA_MOVE) < 0 || gamekeydown[KEY_HAT1])
 				{
 					if (viewserver_scroll)
 					{

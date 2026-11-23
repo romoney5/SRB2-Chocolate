@@ -8219,6 +8219,10 @@ boolean P_LoadLevel(boolean fromnetsave, boolean reloadinggamestate)
 	if (ranspecialwipe == 2)
 		return true;
 
+	// we don't really need the starting delay
+	if (F_CanSkipWipe() && !modeattacking)
+		return true;
+
 	// If so...
 	G_PreLevelTitleCard();
 
