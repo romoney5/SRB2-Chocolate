@@ -177,8 +177,8 @@ extern char logfilename[1024];
 //#define USE_KART
 
 // banpyura issues url
-#define BANPYURA_ISSUES_1 "https://github.com/GLideKS/"
-#define BANPYURA_ISSUES_2 "SRB2-Banpyura/issues"
+#define BANPYURA_ISSUES_1 "https://github.com/romoney5/"
+#define BANPYURA_ISSUES_2 "SRB2-Chocolate/issues"
 
 // Modification options
 // If you want to take advantage of the Master Server's ability to force clients to update
