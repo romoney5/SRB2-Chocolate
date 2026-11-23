@@ -1499,7 +1499,7 @@ void M_StopMovie(void)
 #if NUMSCREENS > 2
 
 	// print the message first since we still have access to movie size
-	CONS_Printf(M_GetText("Movie mode disabled; wrote %d frames (%0.2f mb)\n"),
+	CONS_Printf(M_GetText("Movie mode disabled; wrote %d frames (%0.2f MB)\n"),
 		M_GetMovieFrames(), M_GetMovieSize());
 
 	switch (moviemode)

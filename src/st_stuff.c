@@ -2985,7 +2985,7 @@ void ST_MovieInfoDrawer(void)
 	// draw the rest of the info (time and size)
 	V_DrawThinString(x + strlen(type) * 6, y, flags,
 		va(
-			"%s%d.%02ds | %.2f mb\x86", // the main format
+			"%s%d.%02ds | %.2f MB\x86", // the main format (why not MiB? https://devblogs.microsoft.com/oldnewthing/20090611-00/?p=17933/)
 
 			(near_cap ? "\x82" : "\x86"), // color if near the limit
 			
