@@ -500,6 +500,9 @@
       <Filter>LUA</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="..\blua\lua_srb2.h">
+      <Filter>BLUA</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\tmap.nas">
@@ -984,6 +987,9 @@
     </ClCompile>
     <ClCompile Include="..\lua_httplib.c">
       <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blua\lua_srb2.c">
+      <Filter>BLUA</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

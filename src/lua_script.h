@@ -20,9 +20,16 @@
 #include "g_state.h"
 #include "taglist.h"
 
+/*
 #include "blua/lua.h"
 #include "blua/lualib.h"
 #include "blua/lauxlib.h"
+*/
+
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+#include "blua/lua_srb2.h"
 
 #define lua_optboolean(L, i) (!lua_isnoneornil(L, i) && lua_toboolean(L, i))
 #define lua_opttrueboolean(L, i) (lua_isnoneornil(L, i) || lua_toboolean(L, i))

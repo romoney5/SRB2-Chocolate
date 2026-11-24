@@ -570,7 +570,9 @@ static void LUA_ClearState(void)
 	CONS_Printf(M_GetText("Pardon me while I initialize the Lua scripting interface...\n"));
 
 	// allocate state
-	L = lua_newstate(LUA_Alloc, NULL);
+	// romoney5: use luaL_newstate as not only does luajit recommend it (https://luajit.org/install.html)
+	// but it also crashes in lj_mem_realloc when using a custom alloc function
+	L = luaL_newstate(); // lua_newstate(LUA_Alloc, NULL);
 	lua_atpanic(L, LUA_Panic);
 
 	// open base libraries
@@ -806,7 +808,7 @@ fixed_t LUA_EvalMath(const char *word)
 	{
 		// make a new state so SOC can't interefere with scripts
 		// allocate state
-		L = lua_newstate(LUA_Alloc, NULL);
+		L = luaL_newstate(); // lua_newstate(LUA_Alloc, NULL);
 		lua_atpanic(L, LUA_Panic);
 
 		// open only enum lib

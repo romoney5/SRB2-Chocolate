@@ -258,6 +258,7 @@
   <ItemGroup>
     <ClInclude Include="..\am_map.h" />
     <ClInclude Include="..\apng.h" />
+    <ClInclude Include="..\blua\lua_srb2.h" />
     <ClInclude Include="..\byteptr.h" />
     <ClInclude Include="..\b_bot.h" />
     <ClInclude Include="..\command.h" />
@@ -432,6 +433,7 @@
   <ItemGroup>
     <ClCompile Include="..\am_map.c" />
     <ClCompile Include="..\apng.c" />
+    <ClCompile Include="..\blua\lua_srb2.c" />
     <ClCompile Include="..\b_bot.c" />
     <ClCompile Include="..\command.c" />
     <ClCompile Include="..\comptime.c" />
