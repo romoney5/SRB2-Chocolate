@@ -51,6 +51,9 @@ void LUA_ClearExtVars(void);
 
 extern INT32 lua_lumploading; // is LUA_LoadLump being called?
 
+boolean LUA_LoadString(const char *buffer, size_t size, const char *name);
+void LUA_DoFile(boolean noresults);
+
 int LUA_GetErrorMessage(lua_State *L);
 int LUA_Call(lua_State *L, int nargs, int nresults, int errorhandlerindex);
 boolean LUA_LoadLump(UINT16 wad, UINT16 lump);
