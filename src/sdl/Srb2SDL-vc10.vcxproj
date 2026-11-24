@@ -136,6 +136,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)_Debug</TargetName>
+    <ExternalIncludePath>C:\Users\orbit\Downloads\LuaJIT\src;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)libs\libopenmpt\inc;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ExternalIncludePath>C:\Users\orbit\Downloads\LuaJIT\src;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)libs\libopenmpt\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -178,8 +186,8 @@
       <Outputs />
     </CustomBuild>
     <Link>
-      <AdditionalDependencies>libcurl.dll.a;libz32.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\libs\zlib\win32;..\..\libs\curl\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>lua51.lib;libcurl.dll.a;libz32.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\orbit\Downloads\LuaJIT\src;..\..\libs\zlib\win32;..\..\libs\curl\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -204,8 +212,8 @@
       <Outputs />
     </CustomBuild>
     <Link>
-      <AdditionalDependencies>libcurl.dll.a;libz32.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\libs\zlib\win32;..\..\libs\curl\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>lua51.lib;libcurl.dll.a;libz32.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\orbit\Downloads\LuaJIT\src;..\..\libs\zlib\win32;..\..\libs\curl\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -250,29 +258,6 @@
   <ItemGroup>
     <ClInclude Include="..\am_map.h" />
     <ClInclude Include="..\apng.h" />
-    <ClInclude Include="..\blua\lapi.h" />
-    <ClInclude Include="..\blua\lauxlib.h" />
-    <ClInclude Include="..\blua\lcode.h" />
-    <ClInclude Include="..\blua\ldebug.h" />
-    <ClInclude Include="..\blua\ldo.h" />
-    <ClInclude Include="..\blua\lfunc.h" />
-    <ClInclude Include="..\blua\lgc.h" />
-    <ClInclude Include="..\blua\llex.h" />
-    <ClInclude Include="..\blua\llimits.h" />
-    <ClInclude Include="..\blua\lmem.h" />
-    <ClInclude Include="..\blua\lobject.h" />
-    <ClInclude Include="..\blua\lopcodes.h" />
-    <ClInclude Include="..\blua\lparser.h" />
-    <ClInclude Include="..\blua\lstate.h" />
-    <ClInclude Include="..\blua\lstring.h" />
-    <ClInclude Include="..\blua\ltable.h" />
-    <ClInclude Include="..\blua\ltm.h" />
-    <ClInclude Include="..\blua\lua.h" />
-    <ClInclude Include="..\blua\luaconf.h" />
-    <ClInclude Include="..\blua\lualib.h" />
-    <ClInclude Include="..\blua\lundump.h" />
-    <ClInclude Include="..\blua\lvm.h" />
-    <ClInclude Include="..\blua\lzio.h" />
     <ClInclude Include="..\byteptr.h" />
     <ClInclude Include="..\b_bot.h" />
     <ClInclude Include="..\command.h" />
@@ -447,32 +432,6 @@
   <ItemGroup>
     <ClCompile Include="..\am_map.c" />
     <ClCompile Include="..\apng.c" />
-    <ClCompile Include="..\blua\lapi.c" />
-    <ClCompile Include="..\blua\lauxlib.c" />
-    <ClCompile Include="..\blua\lbaselib.c" />
-    <ClCompile Include="..\blua\lcode.c" />
-    <ClCompile Include="..\blua\ldebug.c" />
-    <ClCompile Include="..\blua\ldo.c" />
-    <ClCompile Include="..\blua\ldump.c" />
-    <ClCompile Include="..\blua\lfunc.c" />
-    <ClCompile Include="..\blua\lgc.c" />
-    <ClCompile Include="..\blua\linit.c" />
-    <ClCompile Include="..\blua\liolib.c" />
-    <ClCompile Include="..\blua\llex.c" />
-    <ClCompile Include="..\blua\lmem.c" />
-    <ClCompile Include="..\blua\lobject.c" />
-    <ClCompile Include="..\blua\lopcodes.c" />
-    <ClCompile Include="..\blua\loslib.c" />
-    <ClCompile Include="..\blua\lparser.c" />
-    <ClCompile Include="..\blua\lstate.c" />
-    <ClCompile Include="..\blua\lstring.c" />
-    <ClCompile Include="..\blua\lstrlib.c" />
-    <ClCompile Include="..\blua\ltable.c" />
-    <ClCompile Include="..\blua\ltablib.c" />
-    <ClCompile Include="..\blua\ltm.c" />
-    <ClCompile Include="..\blua\lundump.c" />
-    <ClCompile Include="..\blua\lvm.c" />
-    <ClCompile Include="..\blua\lzio.c" />
     <ClCompile Include="..\b_bot.c" />
     <ClCompile Include="..\command.c" />
     <ClCompile Include="..\comptime.c" />
