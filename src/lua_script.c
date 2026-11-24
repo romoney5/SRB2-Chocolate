@@ -617,16 +617,10 @@ void LUA_ClearExtVars(void)
 // (i.e. they were called in hooks or coroutines etc)
 INT32 lua_lumploading = 0;
 
-// Load a script from a MYFILE
-static inline boolean LUA_LoadFile(MYFILE *f, char *name)
+boolean LUA_LoadString(const char *buffer, size_t size, const char *name)
 {
 	int errorhandlerindex;
 	boolean success;
-
-	if (!name)
-		name = wadfiles[f->wad]->filename;
-
-	CONS_Printf("Loading Lua script from %s\n", name);
 
 	if (!gL) // Lua needs to be initialized
 		LUA_ClearState();
@@ -634,11 +628,11 @@ static inline boolean LUA_LoadFile(MYFILE *f, char *name)
 	lua_pushcfunction(gL, LUA_GetErrorMessage);
 	errorhandlerindex = lua_gettop(gL);
 
-	success = !luaL_loadbuffer(gL, f->data, f->size, va("@%s",name));
+	success = !luaL_loadbuffer(gL, buffer, size, name);
 
 	if (!success) {
-		CONS_Alert(CONS_WARNING,"%s\n",lua_tostring(gL,-1));
-		lua_pop(gL,1);
+		CONS_Alert(CONS_WARNING, "%s\n", lua_tostring(gL, -1));
+		lua_pop(gL, 1);
 	}
 
 	lua_gc(gL, LUA_GCCOLLECT, 0);
@@ -647,8 +641,19 @@ static inline boolean LUA_LoadFile(MYFILE *f, char *name)
 	return success;
 }
 
+// Load a script from a MYFILE
+static inline boolean LUA_LoadFile(MYFILE *f, char *name)
+{
+	if (!name)
+		name = wadfiles[f->wad]->filename;
+
+	CONS_Printf("Loading Lua script from %s\n", name);
+
+	return LUA_LoadString(f->data, f->size, va("@%s", name));
+}
+
 // Runs a script loaded by LUA_LoadFile.
-static inline void LUA_DoFile(boolean noresults)
+void LUA_DoFile(boolean noresults)
 {
 	int errorhandlerindex;
 

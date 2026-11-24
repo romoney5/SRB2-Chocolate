@@ -182,6 +182,8 @@ static void Command_Togglemodified_f(void);
 static void Command_Archivetest_f(void);
 #endif
 
+static void Command_Runlua_f(void);
+
 // =========================================================================
 //                           CLIENT VARIABLES
 // =========================================================================
@@ -1004,6 +1006,7 @@ void D_RegisterClientCommands(void)
 #ifdef LUA_ALLOW_BYTECODE
 	COM_AddCommand("dumplua", Command_Dumplua_f, COM_LUA);
 #endif
+	COM_AddCommand("runlua", Command_Runlua_f, COM_CLIENT);
 }
 
 /** Checks if a name (as received from another player) is okay.
@@ -5033,6 +5036,20 @@ static void Command_Archivetest_f(void)
 	CONS_Printf("Done. No crash.\n");
 }
 #endif
+
+
+void Command_Runlua_f(void)
+{
+	if (COM_Argc() < 1)
+	{
+		return;
+	}
+
+	boolean success = LUA_LoadString(COM_Argv(1), strlen(COM_Argv(1)), "loaded-lua");
+
+	if (success)
+		LUA_DoFile(false);
+}
 
 /** Makes a change to ::cv_forceskin take effect immediately.
   *
