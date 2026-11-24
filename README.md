@@ -3,7 +3,7 @@
 </p>
 <h1 align = "center">Sonic Robo Blast 2 Chocolate</h1>
 
-SRB2 Chocolate is an experimental custom build, forked from [SRB2 Banpyura](https://www.github.com/GLideKS/SRB2-Banpyura), that aims to provide a more feature-complete experience, similar to that of [SRB2-edit](https://www.github.com/luigi-budd/SRB2-edit).
+SRB2 Chocolate is an experimental custom build, forked from [SRB2 Banpyura](https://www.github.com/GLideKS/SRB2-Banpyura), that aims to provide a more feature-complete experience, similar to [SRB2-edit](https://www.github.com/luigi-budd/SRB2-edit).
 
 Icon made by romoney5.
 
