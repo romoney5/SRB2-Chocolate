@@ -3,11 +3,42 @@
 </p>
 <h1 align = "center">Sonic Robo Blast 2 Chocolate</h1>
 
-SRB2 Chocolate is an experimental custom build, forked from [SRB2 Banpyura](https://www.github.com/GLideKS/SRB2-Banpyura), that aims to provide a more feature-complete experience, similar to [SRB2-edit](https://www.github.com/luigi-budd/SRB2-edit).
+SRB2 Chocolate is an experimental custom build, forked from [SRB2 Banpyura](https://www.github.com/GLideKS/SRB2-Banpyura), that aims to provide a more feature-complete experience similar to [SRB2-edit](https://www.github.com/luigi-budd/SRB2-edit).
 
 Icon made by romoney5.
 
-## Features
+## Chocolate Features
+
+- Use the `runlua` command to run any line of Lua code locally! Great for debugging.
+  - As runlua scripts are treated as loading Lua scripts, hooks and freeslots can also be created.
+
+- Snappier level loading, with `wipes` both on and off.
+
+## Chocolate Branches
+
+Since I've used this repository as a testing workbench in the past (and the present), there are numerous feature branches with experimental features; some are intended to be merged into the main branch. Also note that most branches that relate to compilation won't work outside of MSVC (or even at all!) out of the box, as that is the main compiler I use.
+
+- chocolate-main: Main branch, most other branches are built on top of this (or Banpyura vanilla-master).
+- chocolate-next: Next branch; same as chocolate-main but synced with SRB2's v2.2.16 next branch.
+- chocolate-luajit: WIP port of LuaJIT to SRB2. You need the includes and a DLL of LuaJIT's source code in order to run this.
+- vm-luamenu: Source code for "Luamenu," WIP recreation of SRB2's menus in Lua. See romoney5/luamenu.
+- lo: Heavy WIP infrastructure for a port of SRB2 to the LOVE game framework.
+- openlump: io.readlump Lua function, returns the content of a lump as a string.
+- twopointthree: Port of numerous SRB2 2.3 (dev-master branch) C++ features, including the RHI and new audio subsystem. Also includes a full port of Ring Racers' WebM video recorder. Only compilable using CMake.
+- twopointsevenpluswalllighting: twopointthree branch, including visual features like wall lighting, lighter drop shadows, and more accurate underwater rippling.
+- vm-avrecorder: Experimental port of Ring Racers' WebM video recorder to base vanilla-master (less C++slop features). Does not have audio and video is reported to be buggier, so be mindful of that when porting this branch.
+- (lib)avrecorder: Port of xdf (aka Alice)'s port of Lactozilla's old video encoder powered by libav. This is more heavyweight in libraries, though, and recording performance is poorer compared to avrecorder (this is not multithreaded). On the plus side, though, it supports more video formats.
+- kart-discord-rpc: Experimental port of SRB2Kart's Discord Rich Presence features to vanilla-master (plus source code included within the game). For a complete implementation of this, see luigi-budd/SRB2-edit.
+- stuff: Has various features mixed-in: a fixed-up delfile, any-resolution with fractional scaling, and a "Network Options" menu.
+- only-coraonas: WIP port of Final Demo's Corona functionality to vanilla-master. Assisted by Eden's abandoned merge request and existing leftover functionality in 2.2. Note that gr_batching must be disabled.
+- woofmidi: Port of MIDIMan's port of Woof (Doom source port)'s Native MIDI player. Crashes often.
+- moviesfreetwo: Experimental port of SRB2 Legacy's GitHub Actions workflows, MacOS support was confirmed to not work by WhisperVII. It has funny commit names, though.
+- twopointone: Was intended to be an SRB2 Legacy backward-compatibility branch, only includes serverinfo as of now.
+- tungworld
+
+Any other branches not mentioned here are either already merged in or not noteworthy enough to make it into the list.
+
+## Banpyura Features
 
 ### HUD/Menus
 
