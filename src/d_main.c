@@ -506,21 +506,19 @@ static void D_Display(void)
 				// render the second screen
 				if (splitscreen && players[secondarydisplayplayer].mo)
 				{
-	#ifdef HWRENDER
+					viewwindowy = vid.height / 2;
+
+#ifdef HWRENDER
 					if (rendermode != render_soft)
 						HWR_RenderPlayerView(1, &players[secondarydisplayplayer]);
 					else
 #endif
-					if (rendermode != render_none)
-					{
-						viewwindowy = vid.height / 2;
+						if (rendermode != render_none)
+						{
+							topleft = screens[0] + viewwindowy * vid.width + viewwindowx;
 
-						topleft = screens[0] + viewwindowy*vid.width + viewwindowx;
-
-						R_RenderPlayerView(&players[secondarydisplayplayer]);
-
-						viewwindowy = 0;
-					}
+							R_RenderPlayerView(&players[secondarydisplayplayer]);
+						}
 
 					viewwindowy = 0;
 				}
