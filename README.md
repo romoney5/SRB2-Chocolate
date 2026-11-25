@@ -13,6 +13,8 @@ Icon made by romoney5.
   - As runlua scripts are treated as loading Lua scripts, hooks and freeslots can also be created.
 
 - Snappier level loading, with `wipes` both on and off.
+- More immediate startup.
+- Losing focus from the game window now fully pauses the game.
 
 ## Chocolate Branches
 
