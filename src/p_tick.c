@@ -32,9 +32,7 @@
 // Object place
 #include "m_cheat.h"
 
-#ifdef PARANOIA
 #include "deh_tables.h" // MOBJTYPE_LIST
-#endif
 
 tic_t leveltime;
 
@@ -134,6 +132,29 @@ void Command_Numthinkers_f(void)
 	CONS_Printf("%d\n", count);
 }
 
+static const char *MTConstantName(mobjtype_t type)
+{
+	if (type < 0 || type >= NUMMOBJTYPES || (type >= MT_FIRSTFREESLOT && !FREE_MOBJS[type - MT_FIRSTFREESLOT]))
+		return "<Invalid mobj type>";
+	else if (type >= MT_FIRSTFREESLOT)
+		return FREE_MOBJS[type - MT_FIRSTFREESLOT]; // This doesn't include "MT_"...
+	else
+		return MOBJTYPE_LIST[type];
+}
+
+static const char *MobjTypeName(const mobj_t *mobj)
+{
+	mobjtype_t type;
+	actionf_p1 p1 = mobj->thinker.function;
+
+	if (p1 == (actionf_p1)P_MobjThinker)
+		type = mobj->type;
+	else
+		return "<Not a mobj>";
+
+	return MTConstantName(type);
+}
+
 void Command_CountMobjs_f(void)
 {
 	thinker_t *th;
@@ -190,7 +211,7 @@ void Command_CountMobjs_f(void)
 		}
 
 		if (count > 0) // Don't bother displaying if there are none of this type!
-			CONS_Printf(" * %d: %d\n", i, count);
+			CONS_Printf(" * %s (%d): %d\n", MTConstantName(i), i, count);
 	}
 }
 
@@ -225,26 +246,6 @@ void P_AddThinker(const thinklistnum_t n, thinker_t *thinker)
 }
 
 #ifdef PARANOIA
-static const char *MobjTypeName(const mobj_t *mobj)
-{
-	mobjtype_t type;
-	actionf_p1 p1 = mobj->thinker.function;
-
-	if (p1 == (actionf_p1)P_MobjThinker)
-		type = mobj->type;
-	else if (p1 == (actionf_p1)P_RemoveThinkerDelayed && mobj->thinker.debug_mobjtype != MT_NULL)
-		type = mobj->thinker.debug_mobjtype;
-	else
-		return "<Not a mobj>";
-
-	if (type < 0 || type >= NUMMOBJTYPES || (type >= MT_FIRSTFREESLOT && !FREE_MOBJS[type - MT_FIRSTFREESLOT]))
-		return "<Invalid mobj type>";
-	else if (type >= MT_FIRSTFREESLOT)
-		return FREE_MOBJS[type - MT_FIRSTFREESLOT]; // This doesn't include "MT_"...
-	else
-		return MOBJTYPE_LIST[type];
-}
-
 static const char *MobjThinkerName(const mobj_t *mobj)
 {
 	actionf_p1 p1 = mobj->thinker.function;
