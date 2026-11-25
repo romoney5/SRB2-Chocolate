@@ -86,9 +86,9 @@ FUNCNORETURN static int LUA_Panic(lua_State *L)
 {
 	const char *error = lua_tostring(L, -1);
 
-	CONS_Alert(CONS_ERROR, "LUA PANIC! %s\n", error);
-	I_Error("An unfortunate Lua processing error occurred in the exe itself."
-		"This is usually not a scripting error on your part.\n\n%s",
+	CONS_Alert(CONS_ERROR, "LUA PANIC!\n");
+	I_Error("The game has encountered a Lua processing error internally.\n"
+		"This is usually not caused by a scripting error.\n\n%s",
 		error);
 
 #ifndef __GNUC__
