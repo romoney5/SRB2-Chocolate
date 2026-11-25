@@ -11,6 +11,8 @@ Icon made by romoney5.
 
 - Use the `runlua` command to run any line of Lua code locally! Great for debugging.
   - As runlua scripts are treated as loading Lua scripts, hooks and freeslots can also be created.
+- Resize the window to any resolution you like (up to 8192x8192)!
+  - Ported the `any-resolution` branch with various fixes.
 
 - Snappier level loading, with `wipes` both on and off.
 - More immediate startup.
