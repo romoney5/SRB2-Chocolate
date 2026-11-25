@@ -1352,6 +1352,18 @@ void I_FinishUpdate(void)
 	}
 #endif
 
+	// fully pause the game while defocused
+	if (window_notinfocus && F_CanSkipWipe() && !(modeattacking || netgame))
+	{
+		while (window_notinfocus)
+		{
+			SDL_WaitEvent(NULL);
+			I_OsPolling();
+
+			I_Sleep(50);
+		}
+	}
+
 	exposevideo = SDL_FALSE;
 }
 
