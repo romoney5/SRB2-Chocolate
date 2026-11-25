@@ -1978,7 +1978,7 @@ void CL_ConnectToServer(void)
 		tmp = localtime(&t);
 
 		char date[256];
-		strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", tmp);
+		strftime(date, sizeof(date), "%c", tmp);
 
 		M_AddToJoinedIPs(joinedIP, date, tmpsave);
 	}
